@@ -4,6 +4,8 @@ from environs import Env
 from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
+from dialogflow import detect_intent_text
+
 
 logger = logging.getLogger('telegram_bot')
 
@@ -16,24 +18,36 @@ def start(update: Update, context: CallbackContext) -> None:
     )
 
 
-def echo(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text(update.message.text)
+def intent(update: Update, context: CallbackContext) -> None:
+    chat_id = update.message.chat_id
+    text = detect_intent_text(
+        project_id=env.str('PROJECT_ID'),
+        session_id=chat_id,
+        text=update.message.text,
+        language_code='ru'
+    )
+
+    context.bot.send_message(
+        chat_id=chat_id,
+        text=text,
+    )
 
 
 def main() -> None:
     logging.basicConfig(
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=logging.INFO
     )
-    env = Env()
-    env.read_env()
-    updater = Updater(token=env.str('TELEGRAM_BOT_TOKEN'), use_context=True)
+    updater = Updater(token=env.str('TELEGRAM_BOT_TOKEN'))
     dispatcher = updater.dispatcher
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    dispatcher.add_handler(CommandHandler('start', start))
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, intent))
 
     updater.start_polling()
     updater.idle()
 
 
 if __name__ == '__main__':
+    env = Env()
+    env.read_env()
     main()
