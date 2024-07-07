@@ -1,7 +1,6 @@
 from google.cloud import api_keys_v2, dialogflow_v2
 from google.cloud.api_keys_v2 import Key
 from environs import Env
-from textwrap import dedent
 
 
 def create_api_key(project_id: str) -> Key:
@@ -21,7 +20,6 @@ def create_api_key(project_id: str) -> Key:
 def detect_intent_text(project_id, session_id, text, language_code):
     session_client = dialogflow_v2.SessionsClient()
     session = session_client.session_path(project_id, session_id)
-    print(f'Session path: {session}\n')
 
     text_input = dialogflow_v2.TextInput(text=text, language_code=language_code)
     query_input = dialogflow_v2.QueryInput(text=text_input)
@@ -30,14 +28,8 @@ def detect_intent_text(project_id, session_id, text, language_code):
         session=session, query_input=query_input
     )
     response = session_client.detect_intent(request=request)
-    intent = response.query_result
-
-    print(dedent(f'''
-    Query text: {intent.query_text}\n
-    Detected intent: {intent.intent.display_name}
-    Fulfillment text: {intent.fulfillment_text}\n
-    '''))
-    return intent.fulfillment_text
+    return response.query_result.fulfillment_text, \
+           response.query_result.intent.is_fallback
 
 
 def main():

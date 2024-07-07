@@ -18,9 +18,9 @@ def start(update: Update, context: CallbackContext) -> None:
     )
 
 
-def intent(update: Update, context: CallbackContext) -> None:
+def perform_intent(update: Update, context: CallbackContext) -> None:
     chat_id = update.message.chat_id
-    text = detect_intent_text(
+    text, _ = detect_intent_text(
         project_id=env.str('PROJECT_ID'),
         session_id=chat_id,
         text=update.message.text,
@@ -35,13 +35,14 @@ def intent(update: Update, context: CallbackContext) -> None:
 
 def main() -> None:
     logging.basicConfig(
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        format='%(asctime)s - %(funcName)s -  %(name)s - %(levelname)s - %(message)s',
         level=logging.INFO
     )
+    logger.info('Бот запущен')
     updater = Updater(token=env.str('TELEGRAM_BOT_TOKEN'))
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', start))
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, intent))
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, perform_intent))
 
     updater.start_polling()
     updater.idle()
