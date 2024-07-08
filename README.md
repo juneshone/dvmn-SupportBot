@@ -63,6 +63,9 @@ python .\vk_bot.py
 ```
 _Примеры работы ботов:_
 
+![vk_bot](https://github.com/juneshone/dvmn-SupportBot/blob/main/demo_vk_bot.gif)
+
+![tg_bot](https://github.com/juneshone/dvmn-SupportBot/blob/main/demo_tg_bot.gif)
 
 ## Цель проекта
 
