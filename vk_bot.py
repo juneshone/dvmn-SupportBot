@@ -7,6 +7,7 @@ from environs import Env
 from vk_api.longpoll import VkLongPoll, VkEventType
 
 from dialogflow import detect_intent_text
+from logs import TelegramLogsHandler
 
 
 logger = logging.getLogger('vk_bot')
@@ -32,11 +33,15 @@ def perform_intent(event, vk_api):
 
 
 def main():
+    tg_token = env.str('TELEGRAM_BOT_TOKEN')
+    chat_id = env.int('TELEGRAM_CHAT_ID')
     logging.basicConfig(
         format='%(asctime)s - %(funcName)s -  %(name)s - %(levelname)s - %(message)s',
         level=logging.INFO
     )
-    logger.info('Бот запущен')
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(TelegramLogsHandler(tg_token, chat_id))
+    logger.info('VK Бот запущен')
     vk_session = vk.VkApi(token=env.str('VK_GROUP_TOKEN'))
     vk_api = vk_session.get_api()
     longpoll = VkLongPoll(vk_session)

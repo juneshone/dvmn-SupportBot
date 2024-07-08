@@ -5,7 +5,7 @@ from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
 from dialogflow import detect_intent_text
-
+from logs import TelegramLogsHandler
 
 logger = logging.getLogger('telegram_bot')
 
@@ -34,12 +34,16 @@ def perform_intent(update: Update, context: CallbackContext) -> None:
 
 
 def main() -> None:
+    tg_token = env.str('TELEGRAM_BOT_TOKEN')
+    chat_id = env.int('TELEGRAM_CHAT_ID')
     logging.basicConfig(
         format='%(asctime)s - %(funcName)s -  %(name)s - %(levelname)s - %(message)s',
         level=logging.INFO
     )
-    logger.info('Бот запущен')
-    updater = Updater(token=env.str('TELEGRAM_BOT_TOKEN'))
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(TelegramLogsHandler(tg_token, chat_id))
+    logger.info('Telegram Бот запущен')
+    updater = Updater(token=tg_token)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', start))
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, perform_intent))
