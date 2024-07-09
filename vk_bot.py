@@ -1,6 +1,5 @@
 import logging
 import random
-import time
 import vk_api as vk
 
 from environs import Env
@@ -13,15 +12,13 @@ from logs import TelegramLogsHandler
 logger = logging.getLogger('vk_bot')
 
 
-def perform_intent(event, vk_api):
-    start = time.time()
+def perform_intent(event, vk_api, project_id):
     text, fallback = detect_intent_text(
-        project_id=env.str('PROJECT_ID'),
+        project_id=project_id,
         session_id=event.user_id,
         text=event.text,
         language_code='ru'
     )
-    print("Время ожидания: " + str(time.time() - start)[:5])
     if fallback:
         return None
     else:
@@ -33,8 +30,11 @@ def perform_intent(event, vk_api):
 
 
 def main():
+    env = Env()
+    env.read_env()
     tg_token = env.str('TELEGRAM_BOT_TOKEN')
     chat_id = env.int('TELEGRAM_CHAT_ID')
+    project_id = env.str('PROJECT_ID')
     logging.basicConfig(
         format='%(asctime)s - %(funcName)s -  %(name)s - %(levelname)s - %(message)s',
         level=logging.INFO
@@ -42,16 +42,17 @@ def main():
     logger.setLevel(logging.DEBUG)
     logger.addHandler(TelegramLogsHandler(tg_token, chat_id))
     logger.info('VK Бот запущен')
-    vk_session = vk.VkApi(token=env.str('VK_GROUP_TOKEN'))
-    vk_api = vk_session.get_api()
-    longpoll = VkLongPoll(vk_session)
+    try:
+        vk_session = vk.VkApi(token=env.str('VK_GROUP_TOKEN'))
+        vk_api = vk_session.get_api()
+        longpoll = VkLongPoll(vk_session)
 
-    for event in longpoll.listen():
-        if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-            perform_intent(event, vk_api)
+        for event in longpoll.listen():
+            if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+                perform_intent(event, vk_api, project_id)
+    except Exception as err:
+        logging.error(err, exc_info=True)
 
 
 if __name__ == '__main__':
-    env = Env()
-    env.read_env()
     main()

@@ -43,13 +43,16 @@ def main() -> None:
     logger.setLevel(logging.DEBUG)
     logger.addHandler(TelegramLogsHandler(tg_token, chat_id))
     logger.info('Telegram Бот запущен')
-    updater = Updater(token=tg_token)
-    dispatcher = updater.dispatcher
-    dispatcher.add_handler(CommandHandler('start', start))
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, perform_intent))
+    try:
+        updater = Updater(token=tg_token)
+        dispatcher = updater.dispatcher
+        dispatcher.add_handler(CommandHandler('start', start))
+        dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, perform_intent))
 
-    updater.start_polling()
-    updater.idle()
+        updater.start_polling()
+        updater.idle()
+    except Exception as err:
+        logging.error(err, exc_info=True)
 
 
 if __name__ == '__main__':
