@@ -41,8 +41,8 @@ def main():
     )
     logger.setLevel(logging.DEBUG)
     logger.addHandler(TelegramLogsHandler(tg_token, chat_id))
-    logger.info('VK Бот запущен')
     try:
+        logger.info('VK Бот запущен')
         vk_session = vk.VkApi(token=env.str('VK_GROUP_TOKEN'))
         vk_api = vk_session.get_api()
         longpoll = VkLongPoll(vk_session)
@@ -51,7 +51,7 @@ def main():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 perform_intent(event, vk_api, project_id)
     except Exception as err:
-        logging.error(err, exc_info=True)
+        logger.error(err, exc_info=True)
 
 
 if __name__ == '__main__':
