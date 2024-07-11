@@ -67,7 +67,11 @@ _Примеры работы ботов:_
 
 ![vk_bot](https://github.com/juneshone/dvmn-SupportBot/blob/main/demo_vk_bot.gif)
 
+Ссылка на vk-бота [здесь](https://vk.com/club226476141).
+
 ![tg_bot](https://github.com/juneshone/dvmn-SupportBot/blob/main/demo_tg_bot.gif)
+
+Ссылка на telegram-бота [здесь](https://t.me/VerbGame_support_bot).
 
 ## Цель проекта
 
