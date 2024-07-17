@@ -19,9 +19,7 @@ def perform_intent(event, vk_api, project_id):
         text=event.text,
         language_code='ru'
     )
-    if fallback:
-        return None
-    else:
+    if not fallback:
         return vk_api.messages.send(
             user_id=event.user_id,
             message=text,
