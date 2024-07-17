@@ -39,7 +39,8 @@ def main():
     env = Env()
     env.read_env()
     project_id = env.str('PROJECT_ID')
-    with open('questions.json', 'r', encoding='UTF-8') as message_texts:
+    training_phrases = env.path('TRAINING_PHRASES')
+    with open(training_phrases, 'r', encoding='UTF-8') as message_texts:
         intents_json = message_texts.read()
     intents = json.loads(intents_json)
     for intent, message_text in intents.items():
