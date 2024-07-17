@@ -33,15 +33,17 @@ def perform_intent(update: Update, context: CallbackContext) -> None:
     )
 
 
-def main() -> None:
+if __name__ == '__main__':
+    env = Env()
+    env.read_env()
     tg_token = env.str('TELEGRAM_BOT_TOKEN')
-    chat_id = env.int('TELEGRAM_CHAT_ID')
+    tg_chat_id = env.int('TELEGRAM_CHAT_ID')
     logging.basicConfig(
         format='%(asctime)s - %(funcName)s -  %(name)s - %(levelname)s - %(message)s',
         level=logging.INFO
     )
     logger.setLevel(logging.DEBUG)
-    logger.addHandler(TelegramLogsHandler(tg_token, chat_id))
+    logger.addHandler(TelegramLogsHandler(tg_token, tg_chat_id))
     logger.info('Telegram Бот запущен')
     try:
         updater = Updater(token=tg_token)
@@ -53,9 +55,3 @@ def main() -> None:
         updater.idle()
     except Exception as err:
         logging.error(err, exc_info=True)
-
-
-if __name__ == '__main__':
-    env = Env()
-    env.read_env()
-    main()
